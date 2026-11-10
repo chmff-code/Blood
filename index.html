@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#111318">
+<title>X CHAMO FF V34.6</title>
+<style>
+:root{--green:#25d879;--green2:#087d45;--white:#fff;--panel:#17191f;--panel2:#20232b;--muted:#aeb4c0;--blue:#258cff}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 20% 10%,#243b2d,#0d1014 55%);font-family:Arial,Helvetica,sans-serif;color:#f5f7fa;display:grid;place-items:center;padding:16px}
+button,input,select{font:inherit}
+.welcome{width:min(88vw,340px);padding:28px 20px;text-align:center;background:#17191f;border:2px solid #fff;border-radius:16px;box-shadow:0 16px 45px #000b}
+.welcome-title{font-size:25px;font-weight:1000;letter-spacing:2px;color:#fff;text-shadow:0 0 16px #25d879}
+.welcome-sub{margin:10px 0 25px;font-size:11px;letter-spacing:2px;color:#25d879;font-weight:800}
+.welcome-button{width:100%;padding:15px 12px;border:2px solid #fff;border-radius:11px;background:#25d879;color:#062817;font-weight:1000;letter-spacing:1px;box-shadow:0 5px 18px #0008}
+.welcome-hint{font-size:10px;color:#aeb4c0;margin-top:13px}
+.launcher{position:fixed;right:18px;bottom:18px;z-index:9;padding:13px 17px;border:2px solid white;border-radius:12px;background:var(--green);color:#062817;font-weight:900;box-shadow:0 5px 22px #0009}
+.window{position:relative;isolation:isolate;width:min(92vw,620px);height:min(72dvh,560px);min-height:0;background:var(--panel);border:2px solid #fff;border-radius:14px;overflow:hidden;box-shadow:0 18px 55px #000b;display:flex;flex-direction:column}
+.window:before{
+ content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.42;
+ background-image:
+ radial-gradient(circle,rgba(255,45,65,.95) 1.4px,transparent 2.2px),
+ radial-gradient(circle,rgba(255,45,65,.72) 1px,transparent 2px),
+ radial-gradient(circle,rgba(255,80,90,.6) 1.2px,transparent 2.2px);
+ background-size:47px 43px,71px 67px,103px 89px;
+ background-position:0 0,19px 23px,42px 11px;
+ animation:redGlow 5s ease-in-out infinite alternate;
+}
+@keyframes redGlow{from{opacity:.2;filter:brightness(.8)}to{opacity:.55;filter:brightness(1.35)}}
+.titlebar{height:43px;cursor:grab;touch-action:none;user-select:none;flex:none;display:flex;align-items:center;justify-content:center;position:relative;background:#111318;border-bottom:1px solid #343740;font-size:12px;font-weight:800;letter-spacing:2px}
+.dots{position:absolute;left:12px;display:flex;gap:6px}.dot{width:12px;height:12px;border-radius:50%}.red{background:#ff5d57}.yellow{background:#ffbd2e}.green{background:#28c840}
+.min{position:absolute;cursor:pointer;right:10px;border:1px solid #fff;border-radius:7px;background:#242831;color:#fff;width:29px;height:27px;font-size:19px}
+.layout{display:flex;min-height:0;flex:1}
+.sidebar{width:142px;flex:none;background:rgba(20,22,27,.94);border-right:1px solid #343740;padding:14px 9px;display:flex;flex-direction:column;gap:7px}
+.side-label{font-size:9px;color:#858c98;font-weight:bold;letter-spacing:1px;padding:0 8px 5px}
+.nav{border:1px solid transparent;border-radius:8px;background:transparent;color:#cbd0d9;text-align:left;padding:11px 8px;font-size:12px;font-weight:700}
+.nav.active{background:#242a35;border-color:#3a4659;color:#fff;box-shadow:inset 3px 0 var(--blue)}
+.nav span{display:inline-block;width:23px;color:#aeb8c8}
+.version{margin-top:auto;font-size:9px;color:#7f8794;line-height:1.5;padding:8px}
+.main{flex:1;min-width:0;overflow:auto;padding:13px;background:rgba(26,28,34,.91)}
+.page{display:none}.page.active{display:block}
+.heading{font-size:13px;font-weight:900;color:#e9edf5;margin:2px 0 12px;letter-spacing:.4px}
+.columns{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:#20232b;border:1px solid #363b46;border-radius:9px;padding:12px;margin-bottom:11px}
+.card-title{font-size:11px;color:#9fc5ff;font-weight:800;margin-bottom:12px}
+.checkrow{display:flex;align-items:center;gap:9px;margin:12px 0;font-size:12px;font-weight:700}
+.checkrow input{appearance:none;width:17px;height:17px;border:2px solid #7e8795;border-radius:4px;background:#171a20;flex:none}
+.checkrow input:checked{background:var(--blue);border-color:var(--blue);position:relative}
+.checkrow input:checked:after{content:"✓";display:block;color:white;font-size:13px;text-align:center;line-height:14px}
+.field{display:grid;grid-template-columns:minmax(0,1fr) 88px;align-items:center;gap:8px;margin:12px 0;font-size:12px;font-weight:700}
+select,input[type=number]{width:100%;background:#30343d;color:white;border:1px solid #414752;border-radius:6px;padding:9px;font-size:12px;min-width:0}
+.range{margin:14px 0}.rangehead{display:flex;justify-content:space-between;font-size:12px;margin-bottom:7px}.rangehead output{color:#b8d6ff;font-weight:bold}
+input[type=range]{width:100%;accent-color:var(--blue)}
+.note{font-size:10px;color:#9da5b2;line-height:1.5}
+.action{border:1px solid #fff;background:#263342;color:#fff;border-radius:7px;padding:9px 11px;font-size:11px;font-weight:bold}
+.action.primary{background:var(--green2)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.log{font:11px/1.6 ui-monospace,monospace;color:#b7c2d1;background:#11141a;border:1px solid #343a45;border-radius:8px;padding:10px;min-height:140px;white-space:pre-wrap}
+.skin-preview{height:130px;border:1px dashed #687386;border-radius:9px;display:grid;place-items:center;background:linear-gradient(135deg,#1d2935,#18251e);font-weight:900;letter-spacing:3px;color:#c9e9d7}
+.hidden{display:none!important}
+@media(max-width:560px){
+ body{padding:8px}.window{width:min(88vw,340px);height:min(66dvh,470px);min-height:0;border-radius:12px}
+ .sidebar{width:104px;padding:10px 6px}.nav{font-size:10px;padding:10px 5px}.nav span{width:18px}
+ .main{padding:10px}.columns{grid-template-columns:1fr;gap:0}.card{padding:10px}
+ .titlebar{height:39px}.field{grid-template-columns:minmax(0,1fr) 100px}
+}
+</style>
+</head>
+<body>
+<section class="welcome" id="welcome">
+ <div class="welcome-title">BLOOD STRIKE</div>
+ <div class="welcome-sub">X CHAMO FF V34.6</div>
+ <button class="welcome-button" id="startButton">ABRIR PANEL</button>
+ <div class="welcome-hint">Toca para entrar</div>
+</section>
+<button class="launcher hidden" id="launcher">ABRIR PANEL</button>
+<audio id="bgMusic" src="https://files.catbox.moe/gs9fa2.mp3" preload="auto" loop></audio>
+<section class="window hidden" id="window">
+ <header class="titlebar"><div class="dots"><i class="dot red"></i><i class="dot yellow"></i><i class="dot green"></i></div>X CHAMO FF V34.6<button class="min" id="min">−</button></header>
+ <div class="layout">
+  <aside class="sidebar">
+   <div class="side-label">MENÚ</div>
+   <button class="nav active" data-page="main"><span>◉</span>Main</button>
+   <button class="nav" data-page="memory"><span>◆</span>Memory</button>
+   <button class="nav" data-page="skin"><span>✧</span>Skin</button>
+   <button class="nav" data-page="settings"><span>⚙</span>Settings</button>
+   <button class="nav" data-page="logs"><span>▤</span>Logs</button>
+   <div class="version">Versión 1.0<br>Standalone UI</div>
+  </aside>
+  <main class="main">
+   <section class="page active" id="main">
+    <div class="heading">MAIN OPTIONS</div>
+    <div class="columns">
+     <div class="card">
+      <div class="card-title">ESP OPTIONS · SIMULACIÓN</div>
+      <label class="checkrow"><input type="checkbox" data-label="ESP"> ESP</label>
+      <label class="checkrow"><input type="checkbox" data-label="Line"> Line</label>
+      <label class="checkrow"><input type="checkbox" data-label="Box"> Box</label>
+      <label class="checkrow"><input type="checkbox" data-label="Skeleton"> Skeleton</label>
+      <label class="checkrow"><input type="checkbox" data-label="Info"> Info</label>
+      <label class="checkrow"><input type="checkbox" data-label="Radar"> Radar</label>
+     </div>
+     <div>
+      <div class="card">
+       <div class="card-title">CONFIGURACIÓN</div>
+       <div class="range"><div class="rangehead"><span>Range</span><output id="rangeOut">500</output></div><input id="range" type="range" min="0" max="1000" value="500"></div>
+       <div class="range"><div class="rangehead"><span>Speed</span><output id="speedOut">0.10</output></div><input id="speed" type="range" min="1" max="100" value="10"></div>
+       <div class="field"><span>Mode</span><select id="mode"><option>Shoot+ADS</option><option>Only ADS</option><option>Always</option><option>Manual</option></select></div>
+       <div class="field"><span>Bone</span><select id="bone"><option>Head</option><option>Neck</option><option>Chest</option><option>Random</option></select></div>
+       <div class="field"><span>Target</span><select id="target"><option>Nearest Crosshair</option><option>Nearest</option><option>Center</option></select></div>
+      </div>
+      <div class="card">
+       <div class="card-title">FILTER OPTIONS</div>
+       <label class="checkrow"><input type="checkbox" data-label="Ignore Bots"> Ignore Bots</label>
+       <label class="checkrow"><input type="checkbox" data-label="Ignore Knocked"> Ignore Knocked</label>
+       <label class="checkrow"><input type="checkbox" data-label="Ignore Behind Wall"> Ignore Behind Wall</label>
+      </div>
+     </div>
+    </div>
+   </section>
+   <section class="page" id="memory">
+    <div class="heading">MEMORY · AJUSTES LOCALES</div>
+    <div class="card">
+     <div class="card-title">PREFERENCIAS DE SESIÓN</div>
+     <label class="checkrow"><input type="checkbox" data-label="Guardar preferencias"> Guardar preferencias en esta página</label>
+     <label class="checkrow"><input type="checkbox" data-label="Restaurar al abrir"> Restaurar valores al abrir</label>
+     <div class="field"><span>Perfil</span><select><option>Default</option><option>Personal 1</option><option>Personal 2</option></select></div>
+     <p class="note">Los controles solo actualizan esta demostración en el navegador.</p>
+     <div class="actions"><button class="action" id="save">Guardar estado</button><button class="action" id="reset">Restablecer</button></div>
+    </div>
+   </section>
+   <section class="page" id="skin">
+    <div class="heading">SKIN · APARIENCIA</div>
+    <div class="card"><div class="card-title">VISTA PREVIA</div><div class="skin-preview" id="preview">X CHAMO</div>
+     <div class="field"><span>Tema</span><select id="theme"><option value="green">Verde</option><option value="blue">Azul</option><option value="purple">Morado</option></select></div>
+     <label class="checkrow"><input type="checkbox" id="whiteBorder" checked> Bordes blancos</label>
+     <label class="checkrow"><input type="checkbox" id="compact"> Modo compacto</label>
+    </div>
+   </section>
+   <section class="page" id="settings">
+    <div class="heading">SETTINGS</div>
+    <div class="card"><div class="card-title">PANEL SETTINGS</div>
+     <label class="checkrow"><input type="checkbox" checked data-label="Animaciones"> Animaciones</label>
+     <label class="checkrow"><input type="checkbox" checked data-label="Botón flotante"> Botón flotante</label>
+     <label class="checkrow"><input type="checkbox" data-label="Sonido de interfaz"> Sonido de interfaz</label>
+     <div class="field"><span>Idioma</span><select><option>Español</option><option>English</option></select></div>
+     <div class="field"><span>Posición</span><select><option>Derecha</option><option>Izquierda</option></select></div>
+    </div>
+   </section>
+   <section class="page" id="logs">
+    <div class="heading">LOGS · ACTIVIDAD DEL PANEL</div>
+    <div class="card"><div class="card-title">EVENTOS LOCALES</div><div class="log" id="log">[panel] Interfaz iniciada.\n[panel] Esperando cambios...</div><br><div class="actions"><button class="action" id="clear">Limpiar logs</button><button class="action primary" id="logDemo">Añadir evento demo</button></div></div>
+   </section>
+  </main>
+ </div>
+</section>
+<script>
+const win=document.getElementById('window'),launcher=document.getElementById('launcher'),logEl=document.getElementById('log');
+const welcome=document.getElementById('welcome'), music=document.getElementById('bgMusic');
+async function openPanelAndPlay(){
+  welcome.classList.add('hidden');
+  win.classList.remove('hidden');
+  launcher.classList.add('hidden');
+  try { await music.play(); } catch(err) { log('Pulsa de nuevo para iniciar el audio'); }
+  log('Panel abierto');
+}
+document.getElementById('startButton').addEventListener('click', openPanelAndPlay);
+
+// Arrastre por barra superior: compatible con mouse y pantalla táctil.
+const dragBar = document.querySelector('.titlebar');
+let dragging = false, startX = 0, startY = 0, originX = 0, originY = 0;
+dragBar.addEventListener('pointerdown', (e) => {
+  if (e.target.closest('button')) return;
+  const rect = win.getBoundingClientRect();
+  dragging = true;
+  startX = e.clientX; startY = e.clientY;
+  originX = rect.left; originY = rect.top;
+  win.style.position = 'fixed';
+  win.style.left = rect.left + 'px';
+  win.style.top = rect.top + 'px';
+  win.style.margin = '0';
+  win.style.transform = 'none';
+  dragBar.style.cursor = 'grabbing';
+  e.preventDefault();
+});
+window.addEventListener('pointermove', (e) => {
+  if (!dragging) return;
+  const maxX = Math.max(0, window.innerWidth - win.offsetWidth);
+  const maxY = Math.max(0, window.innerHeight - win.offsetHeight);
+  const x = Math.min(maxX, Math.max(0, originX + e.clientX - startX));
+  const y = Math.min(maxY, Math.max(0, originY + e.clientY - startY));
+  win.style.left = x + 'px';
+  win.style.top = y + 'px';
+});
+function stopDragging() { dragging = false; dragBar.style.cursor = 'grab'; }
+window.addEventListener('pointerup', stopDragging);
+window.addEventListener('pointercancel', stopDragging);
+function log(msg){logEl.textContent+='\\n['+new Date().toLocaleTimeString()+'] '+msg;logEl.scrollTop=logEl.scrollHeight}
+document.getElementById('min').onclick=()=>{win.classList.add('hidden');launcher.classList.remove('hidden')};
+launcher.onclick=()=>{win.classList.remove('hidden');launcher.classList.add('hidden');music.play().catch(()=>{});log('Panel abierto')};
+document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===b.dataset.page));log('Sección abierta: '+b.textContent.trim())});
+document.querySelectorAll('input[type=checkbox]').forEach(c=>c.addEventListener('change',()=>log((c.dataset.label||c.parentElement.textContent.trim())+': '+(c.checked?'activado':'desactivado'))));
+[['range','rangeOut',v=>v],['speed','speedOut',v=>(v/100).toFixed(2)]].forEach(([id,out,fmt])=>{let e=document.getElementById(id),o=document.getElementById(out);e.oninput=()=>{o.textContent=fmt(e.value);log(out.replace('Out','')+' ajustado: '+o.textContent)}});
+['mode','bone','target'].forEach(id=>document.getElementById(id).onchange=e=>log(id+' cambiado a '+e.target.value));
+document.getElementById('clear').onclick=()=>{logEl.textContent='[panel] Registro limpiado.'};
+document.getElementById('logDemo').onclick=()=>log('Evento de demostración añadido');
+document.getElementById('save').onclick=()=>log('Estado de la interfaz guardado temporalmente');
+document.getElementById('reset').onclick=()=>{document.querySelectorAll('input[type=checkbox]').forEach(c=>c.checked=false);document.getElementById('range').value=500;document.getElementById('rangeOut').textContent='500';document.getElementById('speed').value=10;document.getElementById('speedOut').textContent='0.10';log('Controles restablecidos')};
+document.getElementById('theme').onchange=e=>{let colors={green:'#25d879',blue:'#258cff',purple:'#a879ff'};document.documentElement.style.setProperty('--green',colors[e.target.value]);log('Tema cambiado: '+e.target.value)};
+document.getElementById('whiteBorder').onchange=e=>{document.querySelectorAll('.card').forEach(c=>c.style.borderColor=e.target.checked?'#fff':'#363b46');log('Bordes '+(e.target.checked?'blancos':'suaves'))};
+document.getElementById('compact').onchange=e=>{document.querySelectorAll('.card').forEach(c=>c.style.padding=e.target.checked?'7px':'12px');log('Modo compacto '+(e.target.checked?'activado':'desactivado'))};
+</script>
+</body></html>
